@@ -46,12 +46,13 @@ for pg in pg_set:
 	if m is not None:
 		apn_set.add(m.group(1))
 		#print "apn:", m.group(1)
-	print('.', end='')
+	print('.', end='', flush=True)
 
 # output APNs
 f = open('apn.txt', 'w')
 for apn in apn_set:
 	f.write(apn)
+	f.write('\n')
 f.close()
-print("apn.txt written:", len(apn_set))
+print("\napn.txt written:", len(apn_set))
 
