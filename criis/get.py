@@ -46,7 +46,7 @@ for pg in pg_set:
 	if m is not None:
 		apn_set.add(m.group(1))
 		#print "apn:", m.group(1)
-	print('.')
+	print('.', end='')
 
 # output APNs
 f = open('apn.txt', 'w')
