@@ -10,7 +10,8 @@ import rapidjson
 import sys
 
 ## Global
-url = "https://data.sfgov.org/resource/45et-ht7c.json?mapblklot=" 
+#url = "https://data.sfgov.org/resource/45et-ht7c.json?mapblklot=" 
+url = "https://data.sfgov.org/resource/45et-ht7c.json?blklot=" 
 http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
 
 ## getTime
@@ -27,19 +28,20 @@ def getAddy(apn):
 			print(apn, ",NA", sep='')
 			return
 		a = d[0] #address info
-		print(apn,",",a['from_st'], a['street'], a['st_type'])
+		#print(apn,",",a['from_st'], a['street'], a['st_type'])
+		print(apn,",",a['from_st'], a['street'])
+
+#print('Begin Parse:', getTime())
+#getAddy("3624001")
+#getAddy("3624002")
+#getAddy("0282-022")
+#print('End   Parse:', getTime())
 
 print('Begin Parse:', getTime())
-getAddy("3624001")
-getAddy("3624002")
-getAddy("0282-022")
+apns = open('apn.txt', "r").read().splitlines()
+for apn in apns:
+	getAddy(apn)
 print('End   Parse:', getTime())
-sys.exit()
-
-#filename = "apn.txt"
-#apns = open(filename, "r").readlines()
-#for apn in apns:
-#	getAddy(apn)
  
 # output addresses
 #f = open('addy.txt', 'w')
@@ -49,3 +51,4 @@ sys.exit()
 #f.close()
 #print("\napn.txt written:", len(apn_set))
 
+sys.exit()
