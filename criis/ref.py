@@ -18,16 +18,21 @@ def getTime():
 	return datetime.datetime.now().time()
 
 ## getAddy
-def getAddy(apn = "3624001"):
+def getAddy(apn):
+		apn = apn.replace("-","")
 		r = http.request('GET', url + apn)
 		data = r.data.decode('utf-8')
 		d = rapidjson.loads(data)
+		if len(d) < 1:
+			print(apn, ",NA", sep='')
+			return
 		a = d[0] #address info
-		print(apn,":",a['from_st'], a['street'], a['st_type'])
+		print(apn,",",a['from_st'], a['street'], a['st_type'])
 
 print('Begin Parse:', getTime())
 getAddy("3624001")
 getAddy("3624002")
+getAddy("0282-022")
 print('End   Parse:', getTime())
 sys.exit()
 
