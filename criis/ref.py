@@ -11,6 +11,7 @@ import sys
 
 ## Global
 #url = "https://data.sfgov.org/resource/45et-ht7c.json?mapblklot=" 
+# after trial and error determined that blklot better than mapblklot
 url = "https://data.sfgov.org/resource/45et-ht7c.json?blklot=" 
 http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
 
