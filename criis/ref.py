@@ -53,13 +53,13 @@ print('\nEnd   Parse:', getTime())
  
 # output addresses
 # https://stackoverflow.com/questions/15578331/save-list-of-ordered-tuples-as-csv
-with open('a.csv', 'w') as f:
+with open('addr.csv', 'w') as f:
 	fw = csv.writer(f) #fw: file writer
 	fw.writerow(['apn','addy','long','lat'])
 	for addy in addyList:
 		fw.writerow(addy)
 f.close()	
-print("\na.csv written:", len(addyList))
+print("\naddr.csv written:", len(addyList))
 
 sys.exit()
 
