@@ -27,14 +27,18 @@ def getAddy(apn):
 		data = r.data.decode('utf-8')
 		d = rapidjson.loads(data)
 		if len(d) < 1:
-			print(apn, ",NA", sep='')
-			return
+			print("\n", apn, ",NA", sep='')
+			s = (apn,"NA",0,0)
+			return s
 		a = d[0] #address info
 		c = d[1]['geometry']['coordinates'] # coordinate list
 		pt = c[0][0] # first coordinate
 		#print(apn,",",a['from_st']," ",a['street'],",",pt[0],",",pt[1], sep='') #a['st_type'])
-		s = (apn,a['from_st']+" "+a['street'],pt[0],pt[1])
-		print('.', end='', flush=True) #print(s)
+		if 'from_st' in a:
+			s = (apn,a['from_st']+" "+a['street'],pt[0],pt[1])
+			print('.', end='', flush=True) #print(s)
+		else:
+			s = (apn,"NA",0,0)
 		return s
 
 #print('Begin Parse:', getTime())
@@ -67,3 +71,4 @@ sys.exit()
 # http://urbanspatialanalysis.com/dataviz-tutorial-mapping-san-francisco-home-prices-using-r/
 # http://simonkassel.com/blog/2017/2/21/mapping-and-visualizing-san-franciscos-residential-real-estate-market-with-r
 # https://www.arcgis.com/home/item.html?id=2d5b69b44e4c4f1b90bafcae9b823c17
+# https://www.littlemissdata.com/blog/maps

@@ -6,8 +6,6 @@ import datetime
 
 ### Globals
 ###########
-url_set = set()
-apn_set = set()
 domain = '''http://www.criis.com'''
 
 def getTime():
@@ -25,34 +23,47 @@ def getData2(page):
 	#print('len(c)['+str(len(c))+']'+url) # concat str objects w/o spaces
 	return c
 
-### Main
-##########
-
-print('Begin Parse:', getTime())
-filename = "doc.html"
-data = open(filename, "r").read()		
-# regex: findall pages that end with '_A'
-m = re.findall('.*?href="(.*?_A).*?', data)
-if m is None:
-	raise SystemExit
-# remove m's duplicate by creaitng set
-pg_set = set(m)
-print('End   Parse:', getTime())
+# open file and regex out the URLs
+# those URLs will later be opened to get the APNs
+def getPages(filename):
+	print('Begin Parse:', getTime())
+	data = open(filename, "r").read()		
+	m = re.findall('.*?href="(.*?_A).*?', data) # regex: findall pages that end with '_A'
+	if m is None:
+		raise SystemExit
+	pg_set = set(m) # remove m's duplicate by creaitng set
+	print('End   Parse:', getTime())
+	return pg_set
 
 # get data from each url and parse out APN
-for pg in pg_set:
-	c = getData3(pg)
-	m = re.search('.*>([0-9]{4}-.*?)<.*', c)
-	if m is not None:
-		apn_set.add(m.group(1))
-		#print "apn:", m.group(1)
-	print('.', end='', flush=True)
+def getAPNs(pg_set):
+	print('getAPNs:', len(pg_set))
+	apn_set = set()
+	for pg in pg_set:
+		c = getData3(pg)
+		m = re.search('.*>([0-9]{4}-.*?)<.*', c)
+		if m is not None:
+			apn_set.add(m.group(1)) #print "apn:", m.group(1)
+		print('.', end='', flush=True)
+	return apn_set
 
-# output APNs
-f = open('apn.txt', 'w')
-for apn in apn_set:
-	f.write(apn)
-	f.write('\n')
-f.close()
-print("\napn.txt written:", len(apn_set))
+# write APNs
+def writeAPNs(apn_set):
+	f = open('apn.txt', 'w')
+	for apn in apn_set:
+		f.write(apn)
+		f.write('\n')
+	f.close()
+	print("\nwriteAPNs:", len(apn_set))
+
+### Main
+### https://www.guru99.com/learn-python-main-function-with-examples-understand-main.html
+##########
+def main():
+	pg_set = getPages("nod_apr19.html")
+	apn_set = getAPNs(pg_set)
+	writeAPNs(apn_set)
+  
+if __name__== "__main__":
+	main()
 
