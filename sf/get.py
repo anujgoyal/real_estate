@@ -3,6 +3,8 @@
 import re
 import urllib3
 import datetime
+import sys
+import getopt
 
 ### Globals
 ###########
@@ -59,11 +61,26 @@ def writeAPNs(apn_set):
 ### Main
 ### https://www.guru99.com/learn-python-main-function-with-examples-understand-main.html
 ##########
-def main():
-	pg_set = getPages("nod_apr19.html")
+def main(argv):
+	inputfile = ''
+	outfile = ''
+	try:
+		opts,args = getopt.getopt(argv, "hi:o:",["ifile=","ofile="])
+	except getopt.GetoptError:
+		print('get.py -i <inputfile>')
+		sys.exit(1)
+
+	for opt, arg in opts:
+		if opt=='h':
+			print('get.py -i <inputfile>')
+			sys.exit()
+		elif opt in ("-i", "--ifile"):
+			inputfile = arg
+			print('inputfile: ', inputfile)
+	pg_set = getPages(inputfile)
 	apn_set = getAPNs(pg_set)
 	writeAPNs(apn_set)
   
 if __name__== "__main__":
-	main()
+	main(sys.argv[1:])
 
