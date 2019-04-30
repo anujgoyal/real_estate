@@ -11,10 +11,7 @@ basemap <- get_stamenmap(bbox = coord,zoom = 13,maptype = "terrain")
 bmMap <- ggmap(basemap) + mapTheme() + labs(title="San Francisco basemap")
 bmMap
 
-basemap <- get_stamenmap(
-  bbox = coord, 
-  zoom = 13, 
-  maptype = "toner-lite")
+#basemap <- get_stamenmap(bbox = coord, zoom = 13, maptype = "toner-lite")
 
 # http://zevross.com/blog/2014/07/16/mapping-in-r-using-the-ggplot2-package/
 m <- read.csv("addr.csv", stringsAsFactors=FALSE)
