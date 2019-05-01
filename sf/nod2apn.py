@@ -67,12 +67,12 @@ def main(argv):
 	try:
 		opts,args = getopt.getopt(argv, "hi:o:",["ifile=","ofile="])
 	except getopt.GetoptError:
-		print('get.py -i <inputfile>')
+		print('nod2apn.py -i <inputfile>')
 		sys.exit(1)
 
 	for opt, arg in opts:
 		if opt=='h':
-			print('get.py -i <inputfile>')
+			print('nod2apn.py -i <inputfile>')
 			sys.exit()
 		elif opt in ("-i", "--ifile"):
 			inputfile = arg
