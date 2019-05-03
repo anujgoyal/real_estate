@@ -19,11 +19,10 @@ def getData3(page):
 	http = urllib3.PoolManager()
 	r = http.request('GET', domain + page)
 	return r.data.decode('utf-8')
-	
-def getData2(page):
-	c = urllib2.urlopen(domain+url).read()
-	#print('len(c)['+str(len(c))+']'+url) # concat str objects w/o spaces
-	return c
+
+# for python2	
+#def getData2(page):
+#	return urllib2.urlopen(domain+url).read()
 
 # open file and regex out the URLs
 # those URLs will later be opened to get the APNs
@@ -50,8 +49,8 @@ def getAPNs(pg_set):
 	return apn_set
 
 # write APNs
-def writeAPNs(apn_set):
-	f = open('apn.txt', 'w')
+def writeAPNs(apn_set, filename):
+	f = open(filename, 'w')
 	for apn in apn_set:
 		f.write(apn)
 		f.write('\n')
@@ -63,7 +62,7 @@ def writeAPNs(apn_set):
 ##########
 def main(argv):
 	inputfile = ''
-	outfile = ''
+	outputfile = ''
 	try:
 		opts,args = getopt.getopt(argv, "hi:o:",["ifile=","ofile="])
 	except getopt.GetoptError:
@@ -77,9 +76,14 @@ def main(argv):
 		elif opt in ("-i", "--ifile"):
 			inputfile = arg
 			print('inputfile: ', inputfile)
+		elif opt in ("-o", "--ofile"):
+			outputfile = arg
+			print('outputfile: ', outputfile)
+
+    # do real work
 	pg_set = getPages(inputfile)
 	apn_set = getAPNs(pg_set)
-	writeAPNs(apn_set)
+	writeAPNs(apn_set, outputfile)
   
 if __name__== "__main__":
 	main(sys.argv[1:])

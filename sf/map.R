@@ -22,8 +22,11 @@ names(coord) <- c("left", "bottom", "right", "top")
 # Stamen: http://maps.stamen.com
 # https://www.rdocumentation.org/packages/ggmap/versions/3.0.0/topics/get_stamenmap
 basemap <- get_stamenmap(bbox = coord,zoom = 13,maptype = "terrain")
-bmMap <- ggmap(basemap) + mapTheme() + labs(title="San Francisco basemap") # ggmap 
-bmMap <- ggmap(basemap) + labs(title="San Francisco basemap") # ggmap 
+
+# something is wrong with mapTheme()
+# bmMap <- ggmap(basemap) + mapTheme() + labs(title="San Francisco basemap") 
+bmMap <- ggmap(basemap) + labs(title="San Francisco basemap") 
+
 #basemap <- get_stamenmap(bbox = coord, zoom = 13, maptype = "toner-lite")
 
 # http://zevross.com/blog/2014/07/16/mapping-in-r-using-the-ggplot2-package/
