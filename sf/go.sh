@@ -1,7 +1,18 @@
 #!/bin/bash
 
+# defaults: http://linuxcommand.org/lc3_wss0120.php
+if [ "$1" != "" ]; then
+  inputfile=$1
+else
+  echo "[warn] no arg, defaulting to 'doc.html'"
+  inputfile="doc.html"
+fi
+
+echo "[info] $inputfile being scanned"
+
 # get Notice of Defaults and regex for their APNs
-./nod2apn.py -i nod_apr19.html -o nod_apn.txt
+./nod2apn.py -i $inputfile -o nod_apn.txt
+exit
 
 # sort them, stackoverflow.com/questions/29244351
 sort -o nod_apn.txt nod_apn.txt
