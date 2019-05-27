@@ -4,15 +4,14 @@
 if [ "$1" != "" ]; then
   inputfile=$1
 else
-  echo "[warn] no arg, defaulting to 'doc.html'"
-  inputfile="doc.html"
+  echo "[error] need file argument"
+  exit
 fi
 
 echo "[info] $inputfile being scanned"
 
 # get Notice of Defaults and regex for their APNs
 ./nod2apn.py -i $inputfile -o nod_apn.txt
-exit
 
 # sort them, stackoverflow.com/questions/29244351
 sort -o nod_apn.txt nod_apn.txt
