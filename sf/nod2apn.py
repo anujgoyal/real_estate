@@ -32,19 +32,30 @@ def getPages(filename):
 	m = re.findall('.*?href="(.*?_A).*?', data) # regex: findall pages that end with '_A'
 	if m is None:
 		raise SystemExit
-	pg_set = set(m) # remove m's duplicate by creaitng set
+	pg_set = set(m) # remove m's duplicate by creating set
 	print('End   Parse:', getTime())
 	return pg_set
 
 # get data from each url and parse out APN
 def getAPNs(pg_set):
 	print('getAPNs:', len(pg_set))
+	apn = ''
+	rdate = ''
 	apn_set = set()
 	for pg in pg_set:
+		# open url and get c=contents
 		c = getData3(pg)
+		# search for APN
 		m = re.search('.*>([0-9]{4}-.*?)<.*', c)
 		if m is not None:
-			apn_set.add(m.group(1)) #print "apn:", m.group(1)
+			apn = m.group(1)
+			apn_set.add(apn) #print('apn: ', apn)
+		# search for record date
+		# <td colspan="2"><font face="Arial, Helvetica">05/24/2019</font></td>
+		m = re.search('.*>([0-9]{2}/[0-9]{2}/[0-9]{4})<.*', c)
+		if m is not None:
+			rdate = m.group(1)
+			print(apn+','+rdate)
 		print('.', end='', flush=True)
 	return apn_set
 
