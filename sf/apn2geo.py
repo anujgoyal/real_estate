@@ -21,40 +21,58 @@ import csv
 import getopt
 
 ## Global
-# after trial and error determined that blklot better than mapblklot
-# url = "https://data.sfgov.org/resource/45et-ht7c.json?mapblklot=" 
-url = "https://data.sfgov.org/resource/45et-ht7c.json?blklot=" 
 http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
-
-
-def getTime():
-	return datetime.datetime.now().time()
+# after trial and error determined that blklot better than mapblklot
+#url = "https://data.sfgov.org/resource/45et-ht7c.json?mapblklot=" 
+#url = "https://data.sfgov.org/resource/45et-ht7c.json?blklot=" 
+# 2019.09.24
+# https://data.sfgov.org/Geographic-Locations-and-Boundaries/-Deprecated-Addresses-with-Units-Enterprise-Addres/dxjs-vqsy
+# https://data.sfgov.org/Geographic-Locations-and-Boundaries/Addresses-with-Units-Enterprise-Addressing-System/ramy-di5m
+# https://dev.socrata.com/foundry/data.sfgov.org/ramy-di5m
+url = "https://data.sfgov.org/resource/ramy-di5m.json?parcel_number="
+# [{  'eas_baseid': '283633', 
+#      'eas_subid': '493314',
+#     'eas_fullid': '283633-493314-316890',
+#        'address': '2701 VAN NESS AVE #603',
+#    'unit_number': '603',
+# 'address_number': '2701',
+#    'street_name': 'VAN NESS',
+#    'street_type': 'AVE',
+#  'parcel_number': '0503081',
+#          'block': '0503',
+#            'lot': '081',
+#            'cnn': '13169101',
+#      'longitude': '-122.42484884',
+#       'latitude': '37.80057332',
+#       'zip_code': '94123',
+#          'point': {'type': 'Point', 'coordinates': [-122.4248488368, 37.8005733222]},
+#        'supdist': 'SUPERVISORIAL DISTRICT 3',
+#     'supervisor': '3',
+#     'supdistpad': '03',
+#     'numbertext': 'THREE',
+#        'supname': 'Peskin',
+#          'nhood': 'Russian Hill'}]
 
 def getAddy(apn):
-	# cleanup apn by removing dashes
-	apn = apn.replace("-","")
-	# make http call and assign response
-	r = http.request('GET', url + apn)
-	# pull data out of response
-	data = r.data.decode('utf-8')
-	# convert data to json dictionary
-	d = rapidjson.loads(data)
-	# sometimes there is no data, so write 'apn, NA, 0, 0'
-	if len(d) < 1:
-		print("\n", apn, ",NA", sep='')
-		s = (apn,"NA",0,0)
-		return s
+	apn = apn.replace("-","")         # cleanup apn by removing dashes
+	r = http.request('GET', url+apn)  # make http call and assign response
+	data = r.data.decode('utf-8')     # pull data out of response
+	j = rapidjson.loads(data)         # convert data to json dictionary
 
-	# otherwise there's data
-	a = d[0] #address info
-	c = d[1]['geometry']['coordinates'] # coordinate list
-	pt = c[0][0] # first coordinate
-	#debug: print(apn,",",a['from_st']," ",a['street'],",",pt[0],",",pt[1], sep='') #a['st_type'])
-	if 'from_st' in a:
-		s = (apn,a['from_st']+" "+a['street'],pt[0],pt[1])
-		print('.', end='', flush=True) #print(s)
-	else:
+	# sometimes there is no data, so write 'apn, NA, 0, 0'
+	if len(j) < 1:
 		s = (apn,"NA",0,0)
+		print("[getaddy]",apn,"->","not found")
+	# if data, get dict
+	else:
+		d = j[0]
+		addr = d['address']
+		lon  = d['longitude']
+		lat  = d['latitude']
+		#debug: print(apn,",",a['from_st']," ",a['street'],",",pt[0],",",pt[1], sep='') #a['st_type'])
+		s = (apn,addr,lon,lat)
+		print("[getaddy]",apn,"->",addr)
+
 	return s
 
 # DEBUGGING
@@ -62,17 +80,28 @@ def getAddy(apn):
 #getAddy("3624002")
 #getAddy("0282-022")
 
+def getTime():
+	return datetime.datetime.now().time()
+
+# read APNs from inputfile
 def readfile(filename):
-	# read APNs from inputfile
-	print('APN2GEO BEG:', getTime())
 	apns = open(filename, "r").read().splitlines()
+	return apns
+
+# get addresses
+def getAddresses(apnList):
+	print('[apn2geo] begin:', getTime())
 	addyList = []
-	for apn in apns:
-		a = getAddy(apn)
-		addyList.append(a)
-	print('\nAPN2GEO END:', getTime())
+	for apn in apnList:
+		try:
+			a = getAddy(apn)
+			addyList.append(a)
+		except:
+			print("[error] getting address from apn:", apn)
+	print('[apn2geo] end:', getTime())
 	return addyList
 
+# write file
 def writefile(filename, addyList):
 	# https://stackoverflow.com/questions/15578331/save-list-of-ordered-tuples-as-csv
 	with open(filename, 'w') as f:
@@ -81,15 +110,17 @@ def writefile(filename, addyList):
 		for addy in addyList:
 			fw.writerow(addy)
 		f.close()	
-		print("\naddr.csv written:", len(addyList))
+		print("[apn2geo]", filename, "written:", len(addyList))
 
 ### Main
 ##########
 def main(argv):
 	inputfile = ''
 	outputfile = 'addr.csv' # default
+
+	#https://docs.python.org/2/library/getopt.html
 	try:
-		opts,args = getopt.getopt(argv, "hi:o:",["ifile=","ofile="])
+		opts,args = getopt.getopt(argv, "hi:o:g:",["ifile=","ofile="])
 	except getopt.GetoptError:
 		print('apn2geo.py -i <inputfile>')
 		sys.exit(1)
@@ -100,13 +131,19 @@ def main(argv):
 			sys.exit()
 		elif opt in ("-i", "--ifile"):
 			inputfile = arg
-			print('inputfile: ', inputfile)
+			print('[apn2geo] inputfile: ', inputfile)
 		elif opt in ("-o", "--ofile"):
 			outputfile = arg
-			print('outputfile: ', outputfile)
+			print('[apn2geo] outputfile: ', outputfile)
+		elif opt in ("-g"):
+			apn = arg
+			print('[apn2geo] apn: ', apn)
+			getAddy(apn)
+			sys.exit() 	
 
 	# do work
-	addyList = readfile(inputfile)
+	apnList = readfile(inputfile)
+	addyList = getAddresses(apnList)
 	writefile(outputfile, addyList)
 	sys.exit()
 

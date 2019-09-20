@@ -4,7 +4,7 @@
 if [ "$1" != "" ]; then
   inputfile=$1
 else
-  echo "[error] need file argument"
+  echo "[error] go.sh <criis-html>"
   exit
 fi
 
@@ -19,7 +19,7 @@ sort -o nod_apn.txt nod_apn.txt
 # APN to Address & GPS coordinate
 #https://dev.socrata.com/foundry/data.sfgov.org/45et-ht7c
 #https://data.sfgov.org/resource/45et-ht7c.json?mapblklot=3624001
-./apn2geo.py -i nod_apn.txt
+./apn2geo.py -i nod_apn.txt -o addr.csv
 
 # map addr.csv file
 ./map.R addr.csv map.pdf
