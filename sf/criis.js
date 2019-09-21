@@ -4,6 +4,7 @@
 // https://pptr.dev/
 // https://www.toptal.com/puppeteer/headless-browser-puppeteer-tutorial
 // https://stackoverflow.com/questions/52497252/puppeteer-wait-until-page-is-completely-loaded
+// https://blog.bitsrc.io/web-scraping-with-puppeteer-e73e5fee7474
 const puppeteer = require('puppeteer');
 
 try {
