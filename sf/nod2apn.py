@@ -49,12 +49,13 @@ def getAPNs(pg_set):
 		m = re.search('.*>([0-9]{4}-.*?)<.*', c)
 		if m is not None:
 			apn = m.group(1)
-			apn_set.add(apn) #print('apn: ', apn)
+			#apn_set.add(apn) #print('apn: ', apn)
 		# search for record date
 		# <td colspan="2"><font face="Arial, Helvetica">05/24/2019</font></td>
 		m = re.search('.*>([0-9]{2}/[0-9]{2}/[0-9]{4})<.*', c)
 		if m is not None:
 			rdate = m.group(1)
+			apn_set.add(apn+","+rdate)
 			print(apn+','+rdate)
 		print('.', end='', flush=True)
 	return apn_set
@@ -62,9 +63,9 @@ def getAPNs(pg_set):
 # write APNs
 def writeAPNs(apn_set, filename):
 	f = open(filename, 'w')
+	f.write("apn,date\n")
 	for apn in apn_set:
-		f.write(apn)
-		f.write('\n')
+		f.write(apn+'\n')
 	f.close()
 	print("\nwriteAPNs:", len(apn_set))
 
