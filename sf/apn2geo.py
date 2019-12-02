@@ -53,7 +53,9 @@ url = "https://data.sfgov.org/resource/ramy-di5m.json?parcel_number="
 #        'supname': 'Peskin',
 #          'nhood': 'Russian Hill'}]
 
-def getAddy(apn):
+def getAddy(apnDate):
+	apn = apnDate.apn
+	date = apnDate.date
 	apn = apn.replace("-","")         # cleanup apn by removing dashes
 	r = http.request('GET', url+apn)  # make http call and assign response
 	data = r.data.decode('utf-8')     # pull data out of response
@@ -70,9 +72,8 @@ def getAddy(apn):
 		lon  = d['longitude']
 		lat  = d['latitude']
 		#debug: print(apn,",",a['from_st']," ",a['street'],",",pt[0],",",pt[1], sep='') #a['st_type'])
-		s = (apn,addr,lon,lat)
-		print("[getaddy]",apn,"->",addr)
-
+		s = (apn,date,addr,lon,lat)
+		print("[getaddy]",apn,",",date,"->",addr)
 	return s
 
 # DEBUGGING
@@ -83,19 +84,30 @@ def getAddy(apn):
 def getTime():
 	return datetime.datetime.now().time()
 
+class ApnDate:
+  def __init__(self, apn, date):
+    self.apn = apn
+    self.date = date
+
 # read APNs from inputfile
 def readfile(filename):
-	apns = open(filename, "r").read().splitlines()
-	return apns
+	#apns = open(filename, "r").read().splitlines()
+	#return apns
+	apnList = []
+	reader = rd = csv.DictReader(open(filename))
+	for r in reader:
+		ad = ApnDate(r['apn'], r['date'])
+		apnList.append(ad)
+	return apnList
 
 # get addresses
 def getAddresses(apnList):
 	print('[apn2geo] begin:', getTime())
 	addyList = []
-	for apn in apnList:
+	for ad in apnList:
 		try:
-			a = getAddy(apn)
-			addyList.append(a)
+			txt = getAddy(ad)
+			addyList.append(txt)
 		except:
 			print("[error] getting address from apn:", apn)
 	print('[apn2geo] end:', getTime())
@@ -122,12 +134,12 @@ def main(argv):
 	try:
 		opts,args = getopt.getopt(argv, "hi:o:g:",["ifile=","ofile="])
 	except getopt.GetoptError:
-		print('apn2geo.py -i <inputfile>')
+		print('usage: ./apn2geo.py -i <inputfile>')
 		sys.exit(1)
 
 	for opt, arg in opts:
 		if opt=='h':
-			print('usage: apn2geo.py -i <inputfile>')
+			print('usage: ./apn2geo.py -i <inputfile>')
 			sys.exit()
 		elif opt in ("-i", "--ifile"):
 			inputfile = arg
